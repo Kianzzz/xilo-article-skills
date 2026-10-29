@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><title>日期首图 · 静态底图</title>
+<style>body{margin:24px;background:#F4FCF6;color:#14532D;font:16px sans-serif}canvas{width:100%;height:auto;background:white}a{color:#28A85B}p{line-height:1.6}</style>
+<p id="status">正在加载字体…</p><canvas width="2400" height="800"></canvas><p><a id="download" download="date-header-base.png" hidden>下载高清底图 PNG</a></p>
+<script>
+// 日期和文案须由本次规格卡填入；刊头与配色取自 IP 档案（masthead 留空则不显示刊头）。
+const HEADER = {date:"", timezone:"Asia/Shanghai", lines:["", ""], note:"", masthead:"", scale:2,
+  colors:{main:"#14532D", accent:"#23834A", rule:"#B7E2C8"}};
+(async()=>{try{
+const {date,timezone,lines,note,masthead,scale,colors}=HEADER;
+if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error('请填写规格卡日期 YYYY-MM-DD');
+const day=new Date(date+'T12:00:00Z');
+if(!Number.isFinite(day.getTime())||day.toISOString().slice(0,10)!==date)throw Error('日期无效');
+new Intl.DateTimeFormat('zh-CN',{timeZone:timezone}).format(day);
+if(!Array.isArray(lines)||lines.length!==2||lines.some(x=>typeof x!=='string'||!x.trim()))throw Error('请填写两行文案');
+if(!Number.isInteger(scale)||scale<2||scale>4)throw Error('输出倍率应为 2–4 的整数');
+const font=new FontFace('WenKai','url(fonts/WenKai.ttf)');document.fonts.add(await font.load());
+if(font.status!=='loaded')throw Error('霞鹜文楷未加载成功');
+const cv=document.querySelector('canvas'),c=cv.getContext('2d');cv.width=1200*scale;cv.height=400*scale;c.scale(scale,scale);
+c.fillStyle='#FFFFFF';c.fillRect(0,0,1200,400);c.font='300px Arial';c.textAlign='right';c.fillStyle=colors.accent;c.globalAlpha=0.55;c.fillText(date.slice(8),1178,305);c.globalAlpha=1;
+function text(t,x,y,size,color=colors.main,align='left'){c.font=size+'px WenKai';c.fillStyle=color;c.textAlign=align;c.fillText(t,x,y)}
+if(masthead){c.font='19px WenKai';if(c.measureText(masthead).width>400)throw Error('刊头过长');text(masthead,55,57,19,colors.accent)}
+text(date.slice(0,7).replace('-','.'),552,57,17,colors.accent,'right');
+c.strokeStyle=colors.rule;c.lineWidth=1;c.beginPath();c.moveTo(55,76);c.lineTo(552,76);c.stroke();
+c.font='52px WenKai';const width=Math.max(...lines.map(t=>c.measureText(t).width));
+const size=Math.min(52,52*497/width);if(size<40)throw Error('文案过长，请调整分行或重新规划版式');
+text(lines[0],55,176,size);text(lines[1],55,250,size);
+const weekday='星期'+'日一二三四五六'[day.getUTCDay()];const footer=weekday+(note?'  /  '+note:'');
+c.font='16px WenKai';if(c.measureText(footer).width>497)throw Error('底部提示过长');
+text(footer,55,327,16,colors.accent);
+const a=document.querySelector('#download');a.href=cv.toDataURL('image/png');a.hidden=false;
+document.querySelector('#status').textContent=`底图已就绪 · ${cv.width}×${cv.height} · ${date} ${weekday} · ${timezone} · 霞鹜文楷已加载`;
+}catch(e){document.querySelector('#status').textContent='未导出：'+e.message;document.querySelector('#download').hidden=true;}})();
+</script></html>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "xilo-article-jietu"
+  short_description: "按上下文美化截图，并在本地网页调整标注、马赛克、背景和尺寸"
+  default_prompt: "使用 $xilo-article-jietu 处理这篇文章中的截图，先完成标注和美化，按需用马赛克隐藏无关或敏感信息，再打开编辑网页。"

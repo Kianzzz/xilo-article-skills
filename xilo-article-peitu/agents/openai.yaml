@@ -1,0 +1,4 @@
+interface:
+  display_name: "xilo-article-peitu"
+  short_description: "用你自己的 IP 角色，为中文文章生成纯白手绘风日期首图 GIF 与正文配图并审校插入"
+  default_prompt: "使用 $xilo-article-peitu 为这篇文章规划并生成日期首图 GIF 与正文配图。"
