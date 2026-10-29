@@ -11,14 +11,14 @@
 
 先判断文章的核心处境、情绪和转折，再设计「角色正在做什么＋身体怎样摆放＋与什么道具发生关系」。场景必须能用一句具体的话描述，并指出对应的原文或主题依据；不能只写“开心”“疲惫”或“拿着电脑”。
 
-- 动作与姿势一起选：站、坐、躺、趴、蹲、探身、伸懒腰等都可使用。通过重心、肩背、四肢与道具接触关系表达状态，不默认站立展示 IP。
+- 动作按文章内容选最贴切的一个，不预设姿势：站着操作、走或小跑、伸手够东西、搬运、推拉、举起、探身翻找、坐、趴、躺等都可以。通过重心、肩背、四肢与道具接触关系表达状态；不默认站立展示 IP，也不默认坐或躺。
 - 选择 1–2 件承担叙事的主要道具；伙伴角色参与同一个场景。道具形状和摆放要支持动作。
 - 场景可以是文章情绪的视觉隐喻，不得把未提及的经历写成作者事实。文章客观中性时，表达探索、整理或完成等任务状态。
 - 场景化通过人物和道具的关系成立，不铺满室内布景或彩色环境。
 
 判断方法：遮掉文案，仍应看出角色在做什么；换一篇处境不同的文章，动作与道具应随之改变。若同一场景能无差别配给所有文章，退回重设。
 
-例如：文章写连续赶工后的疲惫，可设计“角色陷在沙发里，手臂搭在扶手外，合上的电脑放在旁边”；文章写探索新工具，可设计“角色蹲在打开的工具箱前探身翻找，伙伴顶住箱盖”。这些只是推导示例。
+例如：文章写连续赶工后的疲惫，可设计“角色陷在沙发里，手臂搭在扶手外，合上的电脑放在旁边”；文章写探索新工具，可设计“角色蹲在打开的工具箱前探身翻找，伙伴顶住箱盖”；文章写赶进度，可设计“角色抱着一摞纸小跑，伙伴在前面开路”。这些只是推导示例。
 
 ## 首图规格卡（放在 shot list 最前）
 
@@ -47,7 +47,7 @@
 风险：文字拥挤、IP 裁切、浅色边缘丢失、动画接缝
 ```
 
-一句话是第一视觉层级，默认两行、相同字号、左对齐。默认一位人物和其搭档伙伴；协作确有语义需要时可预先记录为两组。不要为了填空间复制角色。坐、蹲、躺姿都用发顶至下巴校准大小，不能把场景组高套到头部指标上。
+一句话是第一视觉层级，默认两行、相同字号、左对齐。默认一位人物和其搭档伙伴；协作确有语义需要时可预先记录为两组。不要为了填空间复制角色。人物不是直立时（弯腰、奔跑、坐卧等）不测量头身比，只用发顶至下巴校准大小，不能把场景组高套到头部指标上。
 
 背景是纯白 `#FFFFFF`；人物与道具共用 style-dna 的深褐断线与档案色板。浅色头发、白衣依靠深褐轮廓辨认，不以染暗背景增加对比。
 
@@ -55,9 +55,9 @@
 
 ## 生成与动效合成
 
-先按当前环境实际可用的图片工具生成静态位图。静态结果不能直接称为 GIF。动画使用同一份已审校角色层做确定性位移，不逐帧重新生成人物。
+先按当前环境实际可用的图片工具生成静态位图。静态结果不能直接称为 GIF。动画使用同一份角色层做确定性位移，不逐帧重新生成人物。
 
-1. 复制 `assets/date-header.html` 与 `assets/fonts/` 到候选工作目录，修改模板中的 `HEADER` 配置（日期、时区、两行文案、可选短提示、刊头文字与色板）。用本地 HTTP 服务（如 `python3 -m http.server`）和浏览器打开，确认字体加载成功后下载静态底图 PNG。文字使用 Canvas 确定性排版，不让生图模型画中文字。模板失败时报告错误，不静默换字体。
+1. 用 `scripts/render_header_base.py` 自动导出静态底图 PNG：`python3 scripts/render_header_base.py --date YYYY-MM-DD --lines '第一行' '第二行' [--masthead '刊头'] [--note '短提示'] [--colors '{"main":"#14532D","accent":"#23834A","rule":"#B7E2C8"}'] --output base.png`。脚本用本机 Chrome/Chromium/Edge 无界面打开 `assets/date-header.html`，等待霞鹜文楷加载后取出 Canvas 结果，模板报错时原样输出错误。找不到浏览器时可设 `CHROME=/path/to/browser`，或手动用浏览器打开模板副本下载。文字使用 Canvas 确定性排版，不让生图模型画中文字。模板失败时报告错误，不静默换字体。
 2. 用档案参考图生成独立场景层：规格卡中的角色、道具、动作和接触关系，无文字、无日期、无复杂背景。优先请求透明背景，实际检查 alpha；棋盘格不等于透明。只修改大小、位置、文字或日期时复用现有透明场景，仅重新合成。
 3. 若场景只有白底，仅将外部背景编辑为角色中不存在的纯洋红 `#FF00FF`，再用 FFmpeg colorkey 转为透明；检查色溢、锯齿和浅色部位完整性。禁止按白色抠图。无法得到合格透明层则报告阻塞。
 4. 角色、伙伴及保持接触关系所需的道具作为一个浮动组。用 `scripts/compose_date_header.py` 按 alpha>16 裁掉透明外边距；先识别源图人物头部框，再按目标头高等比缩放整组。冲突时先移动场景或精简道具，不默认缩小人物。脚本默认 4 秒、20fps、竖直振幅 8px，横坐标固定；几何溢出时脚本报错。
@@ -88,21 +88,21 @@ python3 scripts/compose_date_header.py \
 场景层提示词：
 
 ```text
-Based on the viewed character references and the IP profile, draw {逐项实例数、场景一句话、姿势、重心、四肢接触点、主道具和伙伴职责}. Basis: {文章处境/用户主题}. Each character with target 1 is exactly one; characters with target 0 are forbidden. Human characters are {头身比}-head proportion; do not treat a sitting/lying bounding box as body height. Natural occlusion must have a clear contact relationship and keep identity markers complete. Eyes follow the profile. Warm dark-brown broken line and the profile palette. Isolated transparent background, no date, no text, no ground shadow; complete scene silhouette with floating room on all sides. No duplicate characters or extra identity markers.
+Based on the viewed character references and the IP profile, draw {逐项实例数、场景一句话、姿势、重心、四肢接触点、主道具和伙伴职责}. Basis: {文章处境/用户主题}. Each character with target 1 is exactly one; characters with target 0 are forbidden. Human characters are {头身比}-head proportion; when the pose is not upright, do not treat its bounding box as body height. Natural occlusion must have a clear contact relationship and keep identity markers complete. Eyes follow the profile. Warm dark-brown broken line and the profile palette. Isolated transparent background, no date, no text, no ground shadow; complete scene silhouette with floating room on all sides. No duplicate characters or extra identity markers.
 ```
 
 ## 印章
 
 档案登记了印章时默认叠加；用户明确不要时省略。印章图层 2400×800 下为 174×174，左上角 (2187,564)，固定不随人物浮动，只轻压日号右下边缘，不挡主文案或人物。白底印章由脚本做白色 colorkey；透明 PNG 印章同样适用。只调整印章时复用已有透明场景重新合成。
 
-## 首图 QA 与完成线
+## 首图检查与完成线
 
-先填写通用角色实例审校卡（身份、数量、比例、档案身份规则）。装置尺度项注明“不适用：日期开场”。另外记录：
+首图同样只生成一次，合成后直接保存插入，不设审校门槛。交付前打开首帧看一遍，把明显问题写进交付说明（角色数量或标志不对、文案或日期写错、日号被挡到认不出、人物出画或压住主文案），由用户决定是否修改。
 
-- 动作、姿势、道具及情绪能追溯至文章或用户主题；伙伴有明确作用。
-- 刊头与档案一致；日期、时区、星期一致；一句话与规格卡逐字一致，缩到文章显示宽度仍清晰。
-- 首图配色与档案色板一致；日号留在背景层，主文案为第一阅读层级。
-- 源图头部框与最终头高（2400×800 下 280–340px）；两位日号在首帧及浮动两极值可辨；场景不挡主文案并保持安全距离。
-- GIF 实际格式、宽高、帧数、帧时长、总时长、无限循环与文件大小。默认 2400×800、80 帧、每帧 50 ms、4 秒。
-- 打开首帧、上下极值帧与末帧复核；在支持 GIF 的查看器或浏览器中实际播放至少两个周期，确认无跳跃、残影、闪烁。仅读元数据不算播放验收。
-- PNG 与 GIF 实际首帧一致；目标平台无法播放 GIF 时明确报告，用 PNG 作说明过的静态替代。
+以下是技术性检查，不涉及重画：
+
+- 日期、时区、星期一致；一句话与规格卡逐字一致；刊头与档案一致。
+- `compose_date_header.py` 已自动验证 GIF 帧数、总时长、无限循环、首帧 PNG 一致和存在真实位移；脚本报错时按提示调整位置或道具后重新合成（不重新生成人物）。
+- 在目标文章中核对位置与 `.gif` 引用。目标平台无法播放 GIF 时明确说明，用 PNG 作为静态替代。
+
+用户反馈问题时，再按上文规格和 `qa-checklist.md` 定位修改。
