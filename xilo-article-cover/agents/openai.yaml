@@ -1,0 +1,8 @@
+interface:
+  display_name: "xilo-article-cover"
+  short_description: "先选风格，再确认标题，输出八种风格提示词或生成文章视频封面"
+  brand_color: "#28A85B"
+  default_prompt: "使用 $xilo-article-cover 制作封面。先让我选择风格；如果我没有给定标题，再根据文章提供5套标题。确认后按平台生成。"
+
+policy:
+  allow_implicit_invocation: true
